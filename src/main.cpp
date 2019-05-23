@@ -98,9 +98,11 @@ bool fAlerts = DEFAULT_ALERTS;
 unsigned int nStakeMinAge = 1 * 60 * 60;
 unsigned int StakeMinAgev2()
 {
-    if (chainActive.Height() > 192021)
-        return 3 * 60 * 60;
-    return nStakeMinAge;
+	if (chainActive.Height() > 192021) {
+		return 3 * 60 * 60;
+	}else {
+		return nStakeMinAge;
+	}
 }
 
 int64_t nReserveBalance = 0;
