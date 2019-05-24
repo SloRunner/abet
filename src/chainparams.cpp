@@ -263,7 +263,7 @@ public:
     CTestNetParams()
     {
         networkID = CBaseChainParams::TESTNET;
-        vTreasuryRewardAddress = "ASZQoFTaEeDfxFwJdoZnNg5rW2M3o2SPrD"; //testnet treasury reward address
+        vTreasuryRewardAddress = "y3CETFTeSABX9Liee9US1BrNTbJpJj191J"; //testnet treasury reward address
         strNetworkID = "test";
 
         pchMessageStart[0] = 0x41;
