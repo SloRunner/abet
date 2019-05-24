@@ -77,10 +77,10 @@ static const Checkpoints::CCheckpointData data = {
 };
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
-    boost::assign::map_list_of(0, uint256("0x001"));
+    boost::assign::map_list_of(0, uint256("0xd1e5dae30542be8ac6f3d574aefd703cf21e203a546df82fc4355ef526e4d1e0"));
 static const Checkpoints::CCheckpointData dataTestnet = {
     &mapCheckpointsTestnet,
-    1557334431,
+    1558694548,
     0,
     250};
 
@@ -263,7 +263,9 @@ public:
     CTestNetParams()
     {
         networkID = CBaseChainParams::TESTNET;
+        vTreasuryRewardAddress = "ASZQoFTaEeDfxFwJdoZnNg5rW2M3o2SPrD"; //testnet treasury reward address
         strNetworkID = "test";
+
         pchMessageStart[0] = 0x41;
         pchMessageStart[1] = 0x4d;
         pchMessageStart[2] = 0x5e;
@@ -292,9 +294,9 @@ public:
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1558694548;
         genesis.nNonce = 958325;
-        printf("genesis.GetHash = %s\n", genesis.GetHash().ToString().c_str());
+        //printf("genesis.GetHash = %s\n", genesis.GetHash().ToString().c_str());
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x9ea2c26f6af70647728219edf9cfdd408a983afcd76685dbeb5240b0fa062199"));
+        assert(hashGenesisBlock == uint256("0xd1e5dae30542be8ac6f3d574aefd703cf21e203a546df82fc4355ef526e4d1e0"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
