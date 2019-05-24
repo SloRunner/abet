@@ -278,17 +278,17 @@ public:
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // Altbet: 1 day
         nTargetSpacing = 1 * 60;  // Altbet: 1 minute
-        nLastPOWBlock = 200;
+        nLastPOWBlock = 100;
         nMaturity = 1;
         nMasternodeCountDrift = 4;
         nMasternodeCollateralAmt = 1000;
         nMasternodeCollateralAmtNew = 5000;
-        nMinStakeInput = 1 * COIN;
+        nMinStakeInput = 0.1 * COIN;
         nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
         nMaxMoneyOut = 43199500 * COIN;
         nZerocoinStartHeight = INT_MAX;
         nZerocoinLastOldParams = INT_MAX;
-        nStartTreasuryBlock = 1000;
+        nStartTreasuryBlock = 200;
         nTreasuryBlockStep = 50;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
