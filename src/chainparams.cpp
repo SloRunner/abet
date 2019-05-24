@@ -278,7 +278,7 @@ public:
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // Altbet: 1 day
         nTargetSpacing = 1 * 60;  // Altbet: 1 minute
-        nLastPOWBlock = 150;
+        nLastPOWBlock = 300;
         nMaturity = 1;
         nMasternodeCountDrift = 4;
         nMasternodeCollateralAmt = 1000;
