@@ -2799,7 +2799,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                     nSubsidy = 1.5 * COIN;
                 }
                 // Check if we reached the coin max supply.
-                int64_t nMoneySupply = chainActive.Tip() - > nMoneySupply;
+                int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
                 if (nMoneySupply + nSubsidy >= Params().MaxMoneyOut())
                     nSubsidy = Params().MaxMoneyOut() - nMoneySupply;
                 if (nMoneySupply >= Params().MaxMoneyOut())
