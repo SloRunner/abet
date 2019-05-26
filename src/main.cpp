@@ -2687,8 +2687,6 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                     nSubsidy = 10000 * COIN;
                 } else if (nHeight >= 5000) {
                     nSubsidy = 130 * COIN;
-                }else{
-                    nSubsidy = 1 * COIN;
                 }
                 if (IsTreasuryBlock(nHeight)) {
                     LogPrintf("GetBlockValue(): this is a treasury block\n");
