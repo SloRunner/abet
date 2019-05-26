@@ -288,7 +288,7 @@ public:
         nMaxMoneyOut = 43199500 * COIN;
         nZerocoinStartHeight = INT_MAX;
         nZerocoinLastOldParams = INT_MAX;
-        nStartTreasuryBlock = 200;
+        nStartTreasuryBlock = 400;
         nTreasuryBlockStep = 50;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
