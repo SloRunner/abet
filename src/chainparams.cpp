@@ -323,9 +323,9 @@ public:
         fTestnetToBeDeprecatedFieldRPC = false;
 
         nPoolMaxTransactions = 2;
-        strSporkKey = "03777204cc3856fcb72b6318230466e8c2ad1450b8a3b2e1fde92978cb3392f1d2";
+        strSporkKey = "03e5edf7d09b04388b2b1a0710539cb2aa240c81e7446632f3853cc91e62e09d55";
 
-        strObfuscationPoolDummyAddress = "AUt8Dws2idXnt1V9v4uczbdH9gCMFvfcxX";
+        strObfuscationPoolDummyAddress = "xz9DfkMXaZv3AW9M5U4B4TrhLq6ZpB6jrx";
         nStartMasternodePayments = 1557334431;
     }
     const Checkpoints::CCheckpointData& Checkpoints() const
