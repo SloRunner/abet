@@ -98,11 +98,12 @@ bool fAlerts = DEFAULT_ALERTS;
 unsigned int nStakeMinAge = 1 * 60 * 60;
 unsigned int StakeMinAgev2()
 {
-	if (chainActive.Height() > 192021) {
-		return 3 * 60 * 60;
-	}else {
-		return nStakeMinAge;
-	}
+    if (Params().NetworkID() == CBaseChainParams::TESTNET) {
+        return 60;
+    }
+    if (chainActive.Height() > 192021)
+        return 3 * 60 * 60;
+    return nStakeMinAge;
 }
 
 int64_t nReserveBalance = 0;
@@ -2685,7 +2686,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
             if (Params().NetworkID() == CBaseChainParams::TESTNET) {
                 if (nHeight == 0) {
                     nSubsidy = 10000 * COIN;
-                } else if (nHeight >= 5000) {
+                } else if (nHeight > 0) {
                     nSubsidy = 130 * COIN;
                 }
                 if (IsTreasuryBlock(nHeight)) {
