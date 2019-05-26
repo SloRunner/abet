@@ -166,6 +166,8 @@ public:
         genesis.nTime = 1539605437;
         genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 2918613;
+        nStartTreasuryBlock = 192021;
+        nTreasuryBlockStep = 1440;
 
         hashGenesisBlock = genesis.GetHash();
         //printf("genesis.GetHash = %s\n", genesis.GetHash().ToString().c_str());
@@ -284,6 +286,8 @@ public:
         nMaxMoneyOut = 43199500 * COIN;
         nZerocoinStartHeight = INT_MAX;
         nZerocoinLastOldParams = INT_MAX;
+        nStartTreasuryBlock = 1000;
+        nTreasuryBlockStep = 50;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1558694548;
