@@ -3211,6 +3211,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
          * note we only undo zerocoin databasing in the following statement, value to and from Altbet
          * addresses should still be handled by the typical bitcoin based undo code
          * */
+				/*
                 if (tx.ContainsZerocoins()) {
                     if (tx.IsZerocoinSpend()) {
                         //erase all zerocoinspends in this transaction
@@ -3238,6 +3239,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                         }
                     }
                 }
+				*/
 
                 uint256 hash = tx.GetHash();
 
@@ -3264,8 +3266,9 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                 }
 
                 // restore inputs
-                if (!tx.IsCoinBase() && !tx.IsZerocoinSpend()) { // not coinbases or zerocoinspend because they dont have traditional inputs
-                    const CTxUndo& txundo = blockUndo.vtxundo[i - 1];
+                //if (!tx.IsCoinBase() && !tx.IsZerocoinSpend()) { // not coinbases or zerocoinspend because they dont have traditional inputs
+				if (!tx.IsCoinBase()) { // not coinbases they dont have traditional inputs
+					const CTxUndo& txundo = blockUndo.vtxundo[i - 1];
                     if (txundo.vprevout.size() != tx.vin.size())
                         return error("DisconnectBlock() : transaction and undo data inconsistent - txundo.vprevout.siz=%d tx.vin.siz=%d", txundo.vprevout.size(), tx.vin.size());
                     for (unsigned int j = tx.vin.size(); j-- > 0;) {
@@ -3419,8 +3422,8 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
 
             CBlockIndex* pindex = chainActive[nHeightStart];
             CAmount nSupplyPrev = pindex->pprev->nMoneySupply;
-            if (nHeightStart == Params().Zerocoin_StartHeight())
-                nSupplyPrev = CAmount(1880313101204990);
+            //if (nHeightStart == Params().Zerocoin_StartHeight())
+               // nSupplyPrev = CAmount(1880313101204990);
 
             while (true) {
                 if (pindex->nHeight % 1000 == 0)
@@ -3436,10 +3439,10 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                         if (tx.IsCoinBase())
                             break;
 
-                        if (tx.vin[i].scriptSig.IsZerocoinSpend()) {
+                        /*if (tx.vin[i].scriptSig.IsZerocoinSpend()) {
                             nValueIn += tx.vin[i].nSequence * COIN;
                             continue;
-                        }
+                        }*/
 
                         COutPoint prevout = tx.vin[i].prevout;
                         CTransaction txPrev;
@@ -3700,7 +3703,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                 const CTransaction& tx = block.vtx[i];
 
                 nInputs += tx.vin.size();
-
+/*
 #if 0
         //Temporarily disable zerocoin transactions for maintenance
         if (block.nTime > GetSporkValue(SPORK_23_ZEROCOIN_MAINTENANCE_MODE) && !IsInitialBlockDownload() && tx.ContainsZerocoins()) {
@@ -3750,6 +3753,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                 }
             }
 #endif
+*/
                 if (!tx.IsCoinBase()) {
                     if (!view.HaveInputs(tx))
                         return state.DoS(100, error("ConnectBlock() : inputs missing/spent"),
@@ -3927,7 +3931,8 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
 
             // add new entries
             for (const CTransaction tx : block.vtx) {
-                if (tx.IsCoinBase() || tx.IsZerocoinSpend())
+                //if (tx.IsCoinBase() || tx.IsZerocoinSpend())
+				if (tx.IsCoinBase())
                     continue;
                 for (const CTxIn in : tx.vin) {
                     LogPrint("map", "mapStakeSpent: Insert %s | %u\n", in.prevout.ToString(), pindex->nHeight);
@@ -5129,11 +5134,11 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
 
                 vector<CBigNum> vBlockSerials;
                 for (const CTransaction& tx : block.vtx) {
-                    if (!CheckTransaction(tx, true, chainActive.Height() + 1 >= Params().Zerocoin_StartHeight(), state, GetSporkValue(SPORK_22_SEGWIT_ACTIVATION) < block.nTime))
+                    //if (!CheckTransaction(tx, true, chainActive.Height() + 1 >= Params().Zerocoin_StartHeight(), state, GetSporkValue(SPORK_22_SEGWIT_ACTIVATION) < block.nTime))
                         return error("CheckBlock() : CheckTransaction failed");
 
                     // double check that there are no double spent zABET spends in this block
-                    if (tx.IsZerocoinSpend()) {
+                    /*if (tx.IsZerocoinSpend()) {
                         for (const CTxIn txIn : tx.vin) {
                             if (txIn.scriptSig.IsZerocoinSpend()) {
                                 libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txIn);
@@ -5144,6 +5149,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                             }
                         }
                     }
+					*/
                 }
                 //} else {
                 //if (block.nVersion >= Params().Zerocoin_HeaderVersion())
