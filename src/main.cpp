@@ -2825,6 +2825,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
         //moved to chainparams.cpp
         bool IsTreasuryBlock(int nHeight)
         {
+            //if we are not synced ignore spork and return true if the height is treasury block
             if ((nHeight - Params().StartTreasuryBlock()) % Params().TreasuryBlockStep() == 0 && (IsSporkActive(SPORK_21_TREASURY_PAYMENT_ENFORCEMENT) || !masternodeSync.IsSynced()))
                 return true;
             else
