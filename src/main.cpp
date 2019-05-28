@@ -3839,7 +3839,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
             if (block.IsProofOfWork())
                 nExpectedMint += nFees;
 
-            LogPrint("rewarddebug", "      - Expected mint: %s MAX: %s", FormatMoney(nExpectedMint), FormatMoney(pindex->nMint))
+            LogPrint("rewarddebug", "      - Expected mint: %s MAX: %s", FormatMoney(nExpectedMint), FormatMoney(pindex->nMint));
 
             //Check that the block does not overmint
             if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint) && (pindex->pprev->nHeight != 84702)) { // bug patched at block 90000, too far to roll back
