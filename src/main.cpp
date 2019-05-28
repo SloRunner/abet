@@ -2825,7 +2825,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
         //moved to chainparams.cpp
         bool IsTreasuryBlock(int nHeight)
         {
-            if ((nHeight - Params().StartTreasuryBlock()) % Params().TreasuryBlockStep() == 0 && IsSporkActive(SPORK_21_TREASURY_PAYMENT_ENFORCEMENT))
+            if ((nHeight - Params().StartTreasuryBlock()) % Params().TreasuryBlockStep() == 0)
                 return true;
             else
                 return false;
