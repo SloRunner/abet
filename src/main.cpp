@@ -2695,8 +2695,6 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                     nSubsidy += GetTreasuryAward(nHeight);
                 }
                 return nSubsidy;
-            }
-
             } else {
                 if (nHeight == 0) {
                     nSubsidy = 210000 * COIN;
@@ -2796,6 +2794,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                 if (IsTreasuryBlock(nHeight)) {
                     LogPrintf("GetBlockValue(): this is a treasury block\n");
                     nSubsidy += GetTreasuryAward(nHeight);
+                }
                 // Check if we reached the coin max supply.
                 int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
                 if (nMoneySupply + nSubsidy >= Params().MaxMoneyOut())
