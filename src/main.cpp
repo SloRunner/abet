@@ -2690,7 +2690,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                     nSubsidy = 130 * COIN;
                 }
                 if (IsTreasuryBlock(nHeight)) {
-                    LogPrintf("GetBlockValue(): this is a treasury block\n");
+                    LogPrint("treasury", "GetBlockValue(): this is a treasury block %s\n", nHeight);
                     //add the award to the block value
                     nSubsidy += GetTreasuryAward(nHeight);
                 }
@@ -2792,7 +2792,8 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
                     nSubsidy = 1.5 * COIN;
                 }
                 if (IsTreasuryBlock(nHeight)) {
-                    LogPrintf("GetBlockValue(): this is a treasury block\n");
+                    //do not spam the debug log if not needed
+                    LogPrint("treasury", "GetBlockValue(): this is a treasury block %s\n", nHeight);
                     nSubsidy += GetTreasuryAward(nHeight);
                 }
                 // Check if we reached the coin max supply.

@@ -263,11 +263,10 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 
 	//check if it's valid treasury block
 	if (IsTreasuryBlock(nBlockHeight - 1) || IsTreasuryBlock(nBlockHeight) || IsTreasuryBlock(nBlockHeight + 1)) {
-		LogPrint("masternode", "IsBlockPayeeValid: Check treasury reward!!!\n");
-		//return true;
+        CScript treasuryPayee = Params().GetTreasuryRewardScriptAtHeight(nBlockHeight);
+        CAmount treasuryAmount = GetTreasuryAward(nBlockHeight);
+		LogPrint("masternode", "IsBlockPayeeValid: Check treasury reward, Block height: %s | Coins: %s\n", nBlockHeight, (float)treasuryAmount / COIN);
 
-		CScript treasuryPayee = Params().GetTreasuryRewardScriptAtHeight(nBlockHeight);
-		CAmount treasuryAmount = GetTreasuryAward(nBlockHeight - 1);
 		LogPrint("masternode", "IsBlockPayeeValid, expected treasury amount is %lld, coins %f\n", treasuryAmount, (float)treasuryAmount / COIN);
 
 		bool bFound = false;
@@ -277,12 +276,14 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 			ExtractDestination(out.scriptPubKey, address1);
 
 			LogPrint("masternode", "IsBlockPayeeValid, txOut: address %s, value is %lld\n", EncodeDestination(address1), out.nValue);
-			if (out.nValue == treasuryAmount)
+			if (out.nValue == treasuryAmount){
 				LogPrintf("Found treasure!\n");
+                bFound = true
+            }
 			else {
 			}
 		}
-
+        return true;
 		if (!bFound) {
 			LogPrint("masternode", "Invalid treasury payment detected %s\n", txNew.ToString().c_str());
 
