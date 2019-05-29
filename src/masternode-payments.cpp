@@ -278,7 +278,7 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 			LogPrint("masternode", "IsBlockPayeeValid, txOut: address %s, value is %lld\n", EncodeDestination(address1), out.nValue);
 			if (out.nValue == treasuryAmount){
 				LogPrintf("Found treasure!\n");
-                bFound = true
+                bFound = true;
             }
 			else {
 			}
