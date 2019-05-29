@@ -262,9 +262,9 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 
 
 	//check if it's valid treasury block
-	if (IsTreasuryBlock(nBlockHeight)) {
-        CScript treasuryPayee = Params().GetTreasuryRewardScriptAtHeight(nBlockHeight);
-        CAmount treasuryAmount = GetTreasuryAward(nBlockHeight);
+	if (IsTreasuryBlock(nBlockHeight - 1)) {
+        CScript treasuryPayee = Params().GetTreasuryRewardScriptAtHeight(nBlockHeight -1);
+        CAmount treasuryAmount = GetTreasuryAward(nBlockHeight -1);
 
 		bool bFound = false;
 
