@@ -348,7 +348,7 @@ void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStak
             masternodePayments.FillBlockPayee(txNew, nFees, fProofOfStake);
         }
     }else{
-        if (IsSporkActive(SPORK_13_ENABLE_SUPERBLOCKS) && budget.IsBudgetPaymentBlock(pindexPrev->nHeight + 1)) {
+        if (IsSporkActive(SPORK_13_ENABLE_SUPERBLOCKS) && budget.IsBudgetPaymentBlock(pindexPrev->nHeight)) {
             budget.FillBlockPayee(txNew, nFees, fProofOfStake);
         } else if (IsTreasuryBlock(pindexPrev->nHeight)) {
             budget.FillTreasuryBlockPayee(txNew, nFees, fProofOfStake);
