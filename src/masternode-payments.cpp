@@ -262,9 +262,10 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
 
 
 	//check if it's valid treasury block
-	if (IsTreasuryBlock(nBlockHeight - 1)) {
-        CScript treasuryPayee = Params().GetTreasuryRewardScriptAtHeight(nBlockHeight -1);
-        CAmount treasuryAmount = GetTreasuryAward(nBlockHeight -1);
+    //check should be done on blocks, not 1 before or 1 later
+	if (IsTreasuryBlock(nBlockHeight)) {
+        CScript treasuryPayee = Params().GetTreasuryRewardScriptAtHeight(nBlockHeight);
+        CAmount treasuryAmount = GetTreasuryAward(nBlockHeight);
 
 		bool bFound = false;
 
@@ -339,12 +340,21 @@ void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStak
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) return;
 
-    if (IsSporkActive(SPORK_13_ENABLE_SUPERBLOCKS) && budget.IsBudgetPaymentBlock(pindexPrev->nHeight + 1)) {
-        budget.FillBlockPayee(txNew, nFees, fProofOfStake);
-    } else if (IsTreasuryBlock(pindexPrev->nHeight)) {
-        budget.FillTreasuryBlockPayee(txNew, nFees, fProofOfStake);
-    } else {
-        masternodePayments.FillBlockPayee(txNew, nFees, fProofOfStake);
+    if (IsSporkActive(SPORK_28_DEV_PAYMENT_METHOD_SWITCH))
+    {
+        if (IsSporkActive(SPORK_13_ENABLE_SUPERBLOCKS) && budget.IsBudgetPaymentBlock(pindexPrev->nHeight + 1)) {
+            budget.FillBlockPayee(txNew, nFees, fProofOfStake);
+        } else {
+            masternodePayments.FillBlockPayee(txNew, nFees, fProofOfStake);
+        }
+    }else{
+        if (IsSporkActive(SPORK_13_ENABLE_SUPERBLOCKS) && budget.IsBudgetPaymentBlock(pindexPrev->nHeight + 1)) {
+            budget.FillBlockPayee(txNew, nFees, fProofOfStake);
+        } else if (IsTreasuryBlock(pindexPrev->nHeight)) {
+            budget.FillTreasuryBlockPayee(txNew, nFees, fProofOfStake);
+        } else {
+            masternodePayments.FillBlockPayee(txNew, nFees, fProofOfStake);
+        }
     }
 }
 
@@ -383,8 +393,21 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
         }
     }
 
-    CAmount blockValue = GetBlockValue(pindexPrev->nHeight);
-    CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight, blockValue);
+    if (IsSporkActive(SPORK_28_DEV_PAYMENT_METHOD_SWITCH))
+    {
+        CAmount blockValue = GetBlockValue(pindexPrev->nHeight + 1);
+        CAmount devfee = GetTreasuryAward(pindexPrev->nHeight + 1);
+        CAmount actualblockvalue = blockValue - devfee;
+        CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight + 1, actualblockvalue);
+    }else{
+        CAmount blockValue = GetBlockValue(pindexPrev->nHeight + 1);
+        CAmount devfee = 0;
+        CAmount actualblockvalue = blockValue - devfee;
+        CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight + 1, actualblockvalue);
+    }
+
+    LogPrintf("CMasternodePayments::FillBlockPayee: block height for payment %d, blockValue %f, devfee %f, actualblockvalue %f\n", pindexPrev->nHeight + 1, blockValue/(float)COIN, devfee/(float)COIN, actualblockvalue/(float)COIN);
+    LogPrintf("CMasternodePayments::FillBlockPayee: masternode payment %f\n", masternodePayment/(float)COIN);
 
     if (!fProofOfStake) {
         txNew.vout[0].nValue = blockValue - (hasPayment ? masternodePayment : 0);
@@ -402,18 +425,57 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
             txNew.vout[i].scriptPubKey = payee;
             txNew.vout[i].nValue = masternodePayment;
 
-            //subtract mn payment from the stake reward
-            txNew.vout[i - 1].nValue -= masternodePayment;
+            CAmount reducefee = masternodePayment+devfee;
+
+            if(txNew.vout[i - 1].nValue < reducefee) {
+                //stake split, we have to distribute reduction over it
+                txNew.vout[i - 1].nValue -= reducefee / 2;
+                assert( (i-2) >= 0); //should never happen
+                txNew.vout[i - 2].nValue -= reducefee / 2;
+                
+            } else {
+                //usual situation, reduce as usual
+                txNew.vout[i - 1].nValue -= reducefee;
+            }
+
         } else {
             txNew.vout.resize(2);
             txNew.vout[1].scriptPubKey = payee;
             txNew.vout[1].nValue = masternodePayment;
+            if (IsSporkActive(SPORK_21_TREASURY_PAYMENT_ENFORCEMENT) && IsSporkActive(SPORK_28_DEV_PAYMENT_METHOD_SWITCH) && IsTreasuryBlock(pindexPrev->nHeight + 1))
+            {
+                txNew.vout[0].nValue = 0; // need to figure out how to calculate this (blockvalue - devfee - masternodePayment) maybe
+            }
         }
 
         CTxDestination address1;
         ExtractDestination(payee, address1);
 
-        LogPrint("masternode","Masternode payment of %s to %s\n", FormatMoney(masternodePayment).c_str(), EncodeDestination(address1).c_str());
+        LogPrint("masternode","Masternode payment of %s to %s with blockvalue\n", FormatMoney(masternodePayment).c_str(), EncodeDestination(address1).c_str());
+
+    } else {
+        if (!fProofOfStake) {
+            txNew.vout[0].nValue = 0; //same as previous
+        } else { //PoS without masternodes
+
+            unsigned int i = txNew.vout.size();
+
+            //txNew.vout[1].nValue = blockValue - devfee;
+            txNew.vout[i-1].nValue -= devfee;
+            //LogPrintf("FillBlockPayee - no masternode payments, all block value to PoS\n");
+        }
+    }
+    
+    //Adding devfee to the TX
+    if (IsSporkActive(SPORK_21_TREASURY_PAYMENT_ENFORCEMENT) && IsSporkActive(SPORK_28_DEV_PAYMENT_METHOD_SWITCH) && IsTreasuryBlock(pindexPrev->nHeight + 1))
+    {
+        int payments = txNew.vout.size() + 1;
+        txNew.vout.resize(payments);
+
+        CScript devRewardscriptPubKey = Params().GetTreasuryRewardScriptAtHeight(pindexPrev->nHeight + 1);
+
+        txNew.vout[payments-1].scriptPubKey = devRewardscriptPubKey;
+        txNew.vout[payments-1].nValue = devfee; 
     }
 }
 
