@@ -380,6 +380,11 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
     bool hasPayment = true;
     CScript payee;
+    //initialize variables
+    CAmount blockValue;
+    CAmount devfee;
+    CAmount actualblockvalue;
+    CAmount masternodePayment;
 
     //spork
     if (!masternodePayments.GetBlockPayee(pindexPrev->nHeight + 1, payee)) {
